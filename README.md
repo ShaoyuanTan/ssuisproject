@@ -5,13 +5,13 @@ This repository contains bioinformatics methods and codes for our paper: Compreh
 
 Below are the main bioinformatic analysis methods.
 
-## MinION assembly
+## MinION reads assembly
 Software version: Canu-1.6
 
 #### ONT reads processing
 
 #### canu assembly
 
-## Illumina assembly
+## Illumina reads assembly
 
-## Hybrid assembly
+## Hybrid assembly using MinION reads and Illumina reads
