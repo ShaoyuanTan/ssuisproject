@@ -15,7 +15,7 @@ Software version: Canu-1.6
 ## Illumina reads assembly
 
 ## Hybrid assembly using MinION reads and Illumina reads
-'''
+```
 cat illumina_reads.fastq > illumina.fastq #cat illumina reads into one fastq file
 
 bwa index minion.contigs.fasta # index contigs file from MinION assembly
@@ -29,5 +29,5 @@ samtools sort hybrid.bam -o hybrid_sorted.bam # sort bam file
 samtools index hybrid_sorted.bam # index bam file
 
 java -Xmx16G -jar pilon-1.22.jar --genome minion.contigs.fastq --bam hybrid_sorted.bam --outdir folder for hybrid assembly # generate a hybrid assembly
-'''
+```
 
