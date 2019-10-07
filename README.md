@@ -1,4 +1,5 @@
 # Comprehensive assessment of Oxford Nanopore MinION sequencing for bacterial characterization
+
 This repository contains bioinformatics methods and codes for our paper: Comprehensive assessment of Oxford Nanopore MinION sequencing for bacterial characterization. The main content of this paper is generation of S.suis whole genomes using oxford nanopore sequencing, and its comparison to Illumina sequencing.
  
 **Raw reads data** was deposited in NCBI under accession ID:
@@ -6,7 +7,6 @@ This repository contains bioinformatics methods and codes for our paper: Compreh
 Below are the main bioinformatic analysis methods.
 
 ## MinION reads assembly
-
 
 #### ONT raw reads processing and evaluation
 
@@ -27,6 +27,7 @@ Software and version: Canu-1.6 (https://github.com/marbl/canu)
 ```
 canu -p ssuisX -d ssuis__assembly genomeSize=2m -nanopore-raw ssuisX.fastq useGrid=0 # using MinION raw reads ssuisX.fastq to generate assembly ssuisX.contigs.fasta.
 ```
+
 #### MinION assembly optimization
 
 Optimization of de novo assembly was performed by examining different fold coverage levels, adjusting read quality filters, and applying different error correction methods. 
@@ -35,8 +36,35 @@ Different fold coverage subsets were obtained by randomly selecting reads from a
 
 Different quality filter cut-off subsets were generated using the "sequencing_summary.txt" from basecall and R (version 3.4.0).
 
-Error correction methods included: racon (https://github.com/isovic/racon), nanopolish (https://github.com/jts/nanopolish) and Pilon (https://github.com/broadinstitute/pilon).
+Error correction methods included: racon-1.3.1 (https://github.com/isovic/racon), nanopolish-0.10.1 (https://github.com/jts/nanopolish) and Pilon-1.22 (https://github.com/broadinstitute/pilon).
 
+**Racon:**
+
+```
+graphmap/bin/Linux-x64/graphmap align -r MinION.contigs.fasta -d MinION.rawreads.fastq -o graphmap.sam 
+
+racon --sam MinION.rawreads.fastq graphmap.sam MinION.contigs.fasta racon_consensus.fasta
+```
+
+**Nanopolish:**
+
+```
+nanopolish index -d fast5_files/ reads.fasta
+
+graphmap/bin/Linux-x64/graphmap align -r MinION.contigs.fasta -d MinION.rawreads.fastq -o graphmap.sam 
+
+samtools view -b graphmap.sam > graphmap.bam
+
+samtools sort graphmap.bam -o graphmap_sorted.bam
+
+samtools index graphmap_sorted.bam
+
+nanopolish variants --consensus -o polished.vcf -w "tig00000001:0-20000" -r reads.fasta -b reads.sorted.bam -g contigs.fasta
+
+nanopolish/nanopolish vcf2fasta --skip-checks -g contigs.fasta dnanopolished.vcf > polished_genome.fasta
+```
+
+**Pilon:** Refer to "hybrid assembly" section
 
 ## Illumina reads processing and assembly
 
@@ -75,6 +103,7 @@ java -Xmx16G -jar pilon-1.22.jar --genome minion.contigs.fastq --bam hybrid_sort
 Assembly contigs from MinION, Illumina and hybrid were assessed by Quast to generat N50, number of contigs, longest contigs etc. And Consensus accuracy and assembly quality of each were evaluated using Mummer. 
 
 Software and version: Quast-4.5 (https://github.com/ablab/quast); Mummer-4.0.0 (https://github.com/mummer4/mummer)
+
 ```
 quast-4.5/quast.py assembly.fasta -o assembly_qualityaccessment 
 
@@ -82,13 +111,17 @@ Mummer-4.00beta2/nucmer -c 100 contigs.fasta reference.fasta -p comparison
 
 Mummer-4.00beta2/dnadiff -d comparison.delta -p comparison_results 
 ```
+
 ## Multilocus sequence typing (MLST) determination
 
 A total of 7 housekeeping genes (aroA, cpn60, dpr, gki, mutS, recA, thrA) for S. suis MLST analysis were downloaded from the PubMLST website (pubmlst.org/). 
+
 Software and version: ncbi_blast
+
 ```
 makeblastdb -in housekeeping_genes.fasta -title mlst -dbtype nucl -out reference
 
 blastn -db dreference -max_target_seqs 2000 -query contigs.fasta -evalue 1e-3 word_size 11 -outfmt 7 > mlst_results
 ```
+
 According to the blast results, top match alleles were recorded, and MLST profiles were predicted using PubMLST (pubmlst.org/).
