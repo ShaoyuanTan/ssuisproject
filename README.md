@@ -12,11 +12,14 @@ Below are the main bioinformatic analysis methods.
 
 MinION raw sequencing reads in fast5 format were basecalled using Albacore to generat fastq files. 
 
-MinIONQC (https://github.com/roblanf/minion_qc) waw used to determine yields, mean read length, and mean quality
+MinIONQC (https://github.com/roblanf/minion_qc) was used to determine yields, read length, and read quality.
+
+Alignment of the MinION raw fastq file from basecall to the draft genome from Illumina sequencing was performed using Graphmap (https://github.com/isovic/graphmap).
+
 
 #### Canu assembly
 
-Software version: Canu-1.6
+Software version: Canu-1.6 (https://github.com/marbl/canu)
 
 ```
 canu -p ssuisX -d ssuis__assembly genomeSize=2m -nanopore-raw ssuisX.fastq useGrid=0 # using MinION raw reads ssuisX.fastq to generate assembly ssuisX.contigs.fasta.
@@ -25,7 +28,7 @@ canu -p ssuisX -d ssuis__assembly genomeSize=2m -nanopore-raw ssuisX.fastq useGr
 
 ## Illumina reads processing and assembly
 
-Software version: Trimmomatic-0.36;  FastQC-0.11.6; SPAdes-3.11.1
+Software version: Trimmomatic-0.36 (http://www.usadellab.org/cms/index.php?page=trimmomatic);  FastQC-0.11.6 (https://github.com/s-andrews/FastQC); SPAdes-3.11.1 (https://github.com/ablab/spades)
 
 ```
 java -jar trimmomatic-0.36.jar PE -phred33 read_R1_001.fastq read_R2_001.fastq output_forward_paired.fastq output_forward_unpaired.fastq output_reverse_paired.fastq output_reverse_unpaired.fastq ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36 #trim Illumina reads using phred quality 33 as cutoff.
@@ -37,7 +40,7 @@ python spades.py -1 output_forward_paired.fastq -2 output_reverse_paired.fastq -
 
 ## Hybrid assembly using MinION reads and Illumina reads
 
-Software version: Samtools-1.8 ; pilon-1.22
+Software version: Samtools-1.8 (https://github.com/samtools/samtools); pilon-1.22 (https://github.com/broadinstitute/pilon)
 
 ```
 cat illumina_reads.fastq > illumina.fastq #cat illumina reads into one fastq file
