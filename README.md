@@ -10,6 +10,10 @@ Below are the main bioinformatic analysis methods.
 
 #### ONT reads processing
 
+MinION raw sequencing reads in fast5 format were basecalled using Albacore to generat fastq files. 
+
+MinIONQC (https://github.com/roblanf/minion_qc) waw used to determine yields, mean read length, and mean quality
+
 #### Canu assembly
 
 Software version: Canu-1.6
